@@ -60,10 +60,10 @@ Resources:
     Properties:
       BucketName: s3-public-read-cloudsec-academy-1a2f
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: TRUE #Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
-        BlockPublicPolicy: TRUE #Specifies whether Amazon S3 should block public bucket policies for this bucket.
-        IgnorePublicAcls: TRUE #Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
-        RestrictPublicBuckets: TRUE #Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
+        BlockPublicAcls: FALSE #Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+        BlockPublicPolicy: FALSE #Specifies whether Amazon S3 should block public bucket policies for this bucket.
+        IgnorePublicAcls: FALSE #Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+        RestrictPublicBuckets: FALSE #Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
 
   EC2Instance80:
     Type: "AWS::EC2::Instance"
