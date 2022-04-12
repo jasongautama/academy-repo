@@ -19,6 +19,21 @@ git clone this repo to your laptop
 
 <b>Step 2</b> <br>
 
+generate ssh key pair on AWS EC2 menu and then go to sub menu Network & Security > Key Pairs
+
+<br>
+
 upload cloud formation template (main.yml) to AWS CloudFormation
 
+<br>
+
+adjust paramaters: Instance type, Key pair name
+
 <b>Step 3</b> <br>
+
+
+<h1> Testing </h1>
+
+<b> Login to EC2 Tester </b>
+
+ssh -i keypair-name.pem ec2-user@ip_address
