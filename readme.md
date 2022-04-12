@@ -1,4 +1,4 @@
-<h1> <b> Resources </b> <br>
+<h1> <b> Resources </b> </h1> <br> 
 <br>
 <b>S3</b> <br>
 1. S3 Public Write Access <br>
@@ -11,7 +11,7 @@
 2. EC2 SSH Server <br>
 3. EC2 Tester <br>
 
-<h1> Steps
+<h1> Steps </h1>
 <br>
 <b>Step 1</b> <br>
 
