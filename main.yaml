@@ -5,6 +5,10 @@ Description: >-
   on the region in which the stack is run. You will be billed for the AWS resources used
   if you create a stack from this template.
 Parameters:
+  BucketChars:
+    Description: Please enter 4 random digit characters
+    Type: String
+
   InstanceType:
     Description: EC2 instance type
     Type: String
@@ -15,12 +19,11 @@ Parameters:
       - t2.micro
       - t2.small
     ConstraintDescription: must be a valid EC2 instance type.
-  KeyName:
-    Default: 'EC2 KeyPair'
-    Description: 'The existing of EC2 KeyPair name to enable SSH access to the instance'
-    Type: 'AWS::EC2::KeyPair::KeyName'
-    ConstraintDescription: The existing of EC2 KeyPair name.
-
+  # KeyName:
+  #   Default: "EC2 KeyPair"
+  #   Description: "The existing of EC2 KeyPair name to enable SSH access to the instance"
+  #   Type: "AWS::EC2::KeyPair::KeyName"
+  #   ConstraintDescription: The existing of EC2 KeyPair name.
 
 Mappings:
   AWSInstanceType2Arch:
@@ -50,28 +53,18 @@ Mappings:
       HVMG2: ami-0c0ab057a101d8ff2
 
 Resources:
-  S3PublicWrite:
-    Type: "AWS::S3::Bucket"
-    Properties:
-      BucketName: s3-public-write-cloudsec-academy-1a2f
-      AccessControl: PublicReadWrite
-      #  PublicAccessBlockConfiguration:
-      #   BlockPublicAcls: FALSE #Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
-      #   BlockPublicPolicy: FALSE #Specifies whether Amazon S3 should block public bucket policies for this bucket.
-      #   IgnorePublicAcls: FALSE #Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
-      #   RestrictPublicBuckets: FALSE #Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
-
   S3PublicRead:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: s3-public-read-cloudsec-academy-1a2f
+      BucketName:
+        !Join ["-", [s3-public-read-cloudsec-academy, !Ref BucketChars]]
       PublicAccessBlockConfiguration:
         BlockPublicAcls: FALSE #Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
         BlockPublicPolicy: FALSE #Specifies whether Amazon S3 should block public bucket policies for this bucket.
         IgnorePublicAcls: FALSE #Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
         RestrictPublicBuckets: FALSE #Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
 
-# EC2 Instance Target 1 with port 80
+  # EC2 Instance Target 1 with port 80
 
   EC2Instance80:
     Type: "AWS::EC2::Instance"
@@ -86,9 +79,9 @@ Resources:
           - AWSInstanceType2Arch
           - !Ref InstanceType
           - Arch
-      Tags :
-        - Key   : Name
-          Value : EC2 HTTP Server
+      Tags:
+        - Key: Name
+          Value: tkpd-ec2-port-22
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -106,7 +99,9 @@ Resources:
           ToPort: "80"
           CidrIp: 0.0.0.0/0
 
-# EC2 Instance Target 2 with port 22
+  # EC2 Instance Target 2 with port 22
+  # description: create EC2 instance that allows
+  #   all CIDR 0.0.0.0/0 to access port 80
 
   EC2Instance22:
     Type: "AWS::EC2::Instance"
@@ -121,9 +116,9 @@ Resources:
           - AWSInstanceType2Arch
           - !Ref InstanceType
           - Arch
-      Tags :
-        - Key   : Name
-          Value : EC2 SSH Server
+      Tags:
+        - Key: Name
+          Value: tkpd-ec2-port-80
 
   InstanceSecurityGroup22:
     Type: "AWS::EC2::SecurityGroup"
@@ -135,7 +130,7 @@ Resources:
           ToPort: "22"
           CidrIp: 0.0.0.0/0
 
-# EC2 Instance as Tester
+  # EC2 Instance as Tester
 
   EC2InstanceTester:
     Type: "AWS::EC2::Instance"
@@ -150,10 +145,17 @@ Resources:
           - AWSInstanceType2Arch
           - !Ref InstanceType
           - Arch
-      KeyName: !Ref KeyName
-      Tags :
-         - Key   : Name
-           Value : EC2 Tester
+      # KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: tkpd-ec2-ext-conn
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          mkdir domains && curl https://raw.githubusercontent.com/jasongautama/academy-repo/main/queries.txt > ./domains/queries.txt
+          curl https://raw.githubusercontent.com/jasongautama/academy-repo/main/guard-duty-tester.sh > guard-duty-tester.sh
+          chmod a+x guard-duty-tester.sh && ./guard-duty-tester.sh
+          
 
   InstanceSecurityGroupTester:
     Type: "AWS::EC2::SecurityGroup"
@@ -164,19 +166,27 @@ Resources:
           FromPort: "22"
           ToPort: "22"
           CidrIp: 0.0.0.0/0
-    
- 
+
 Outputs:
-  InstanceIdEC2port22:
-    Description: InstanceId of EC2 instance with port 80 & 22 open
-    Value: !Join ["  ,  ", [!Ref EC2Instance80, !Ref EC2Instance22]]
-  AvailabilityZone:
+  PublicReadBucket:
+    Description: S3 Bucket that is made to be public
+    Value: !Ref S3PublicRead
+  InstanceIdEC2p80:
+    Description: InstanceId of EC2 instance with port 80 open
+    Value: !Ref EC2Instance80
+  InstanceIdEC2p22:
+    Description: InstanceId of EC2 instance with port 22 open
+    Value: !Ref EC2Instance22
+  InstanceIdEC2p22:
+    Description: InstanceId of EC2 instance with port 22 open
+    Value: !Ref EC2InstanceTester
+  CurrentAvailabilityZone:
     Description: Availability Zone of the newly created EC2 instance
     Value: !GetAtt
       - EC2Instance80
       - AvailabilityZone
   PublicDNSport80:
-    Description: Public DNSName of the newly created EC2 instance port 80
+    Description: Use this DNS url to visit the welcome page
     Value: !GetAtt
       - EC2Instance80
       - PublicDnsName
