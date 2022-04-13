@@ -19,11 +19,11 @@ Parameters:
       - t2.micro
       - t2.small
     ConstraintDescription: must be a valid EC2 instance type.
-  # KeyName:
-  #   Default: "EC2 KeyPair"
-  #   Description: "The existing of EC2 KeyPair name to enable SSH access to the instance"
-  #   Type: "AWS::EC2::KeyPair::KeyName"
-  #   ConstraintDescription: The existing of EC2 KeyPair name.
+  KeyName:
+    Default: "EC2 KeyPair"
+    Description: "The existing of EC2 KeyPair name to enable SSH access to the instance"
+    Type: "AWS::EC2::KeyPair::KeyName"
+    ConstraintDescription: The existing of EC2 KeyPair name.
 
 Mappings:
   AWSInstanceType2Arch:
@@ -53,6 +53,18 @@ Mappings:
       HVMG2: ami-0c0ab057a101d8ff2
 
 Resources:
+  S3PublicWrite:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName:
+        !Join ["-", [s3-public-write-cloudsec-academy, !Ref BucketChars]]
+      AccessControl: PublicReadWrite
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: FALSE #Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+        BlockPublicPolicy: FALSE #Specifies whether Amazon S3 should block public bucket policies for this bucket.
+        IgnorePublicAcls: FALSE #Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+        RestrictPublicBuckets: FALSE #Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
+
   S3PublicRead:
     Type: "AWS::S3::Bucket"
     Properties:
@@ -145,7 +157,7 @@ Resources:
           - AWSInstanceType2Arch
           - !Ref InstanceType
           - Arch
-      # KeyName: !Ref KeyName
+      KeyName: !Ref KeyName
       Tags:
         - Key: Name
           Value: tkpd-ec2-ext-conn
