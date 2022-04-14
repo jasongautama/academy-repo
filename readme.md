@@ -40,17 +40,17 @@ Adjust paramaters: Random Unique for S3 bucket, Instance type, and Key pair name
 
 <b> Login to EC2 Tester </b>
 
-chmod 400 keypair-name.pem
+<code> chmod 400 keypair-name.pem </code>
 
 <br>
 
-ssh -i keypair-name.pem ec2-user@ip_address
+<code> ssh -i keypair-name.pem ec2-user@ip_address </code>
 
 <br>
 
 <b> Port Scanning </b>
 
-nmap -sT ip_address_webserver
+<code> nmap -sT ip_address_webserver </code>
 
 
 
