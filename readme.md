@@ -31,7 +31,7 @@ Upload cloud formation template (main.yml) to AWS CloudFormation
 
 <br>
 
-Adjust paramaters: Instance type, Key pair name
+Adjust paramaters: Random Unique for S3 bucket, Instance type, and Key pair name.
 
 <b>Step 3</b> <br>
 
@@ -47,6 +47,10 @@ chmod 400 keypair-name.pem
 ssh -i keypair-name.pem ec2-user@ip_address
 
 <br>
+
+<b> Port Scanning </b>
+
+nmap -sT ip_address_webserver
 
 
 
