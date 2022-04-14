@@ -111,7 +111,7 @@ Resources:
           ToPort: "80"
           CidrIp: 0.0.0.0/0
 
-  # EC2 Instance Target 2 with port 22
+  # EC2 Instance Target 2 with port 80
   # description: create EC2 instance that allows
   #   all CIDR 0.0.0.0/0 to access port 80
 
@@ -135,11 +135,11 @@ Resources:
   InstanceSecurityGroup22:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
-      GroupDescription: Enable ssh port (22) open
+      GroupDescription: Enable ssh port (80) open
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: "22"
-          ToPort: "22"
+          FromPort: "80"
+          ToPort: "80"
           CidrIp: 0.0.0.0/0
 
   # EC2 Instance as Tester
@@ -160,7 +160,7 @@ Resources:
       KeyName: !Ref KeyName
       Tags:
         - Key: Name
-          Value: tkpd-ec2-ext-conn
+          Value: tkpd-ec2-tester
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
