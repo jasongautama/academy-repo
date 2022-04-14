@@ -1,8 +1,10 @@
 <h1> <b> Resources </b> </h1> <br> 
 <br>
 <b>S3</b> <br>
+
 1. S3 Public Write Access <br>
 2. S3 Public Read Access <br>
+
 <br>
 
 <b>EC2</b> <br>
